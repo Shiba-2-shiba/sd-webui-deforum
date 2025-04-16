@@ -7,7 +7,7 @@ from .subtitle_handler import get_user_values
 def on_ui_settings():
     srt_ui_params = get_user_values()
     section = ('deforum', "Deforum")
-    opts.add_option("deforum_keep_3d_models_in_vram", OptionInfo(False, "Keep 3D models in VRAM between runs", gr.Checkbox, {"interactive": True, "visible": True if not (cmd_opts.lowvram or cmd_opts.medvram) else False}, section=section))
+    opts.add_option("deforum_keep_3d_models_in_vram", OptionInfo(False, "Keep 3D models in VRAM between runs", gr.Checkbox, {"interactive": True, "visible": True}, section=section))
     opts.add_option("deforum_enable_persistent_settings", OptionInfo(False, "Keep settings persistent upon relaunch of webui", gr.Checkbox, {"interactive": True}, section=section))
     opts.add_option("deforum_persistent_settings_path", OptionInfo("models/Deforum/deforum_persistent_settings.txt", "Path for saving your persistent settings file:", section=section))
     opts.add_option("deforum_ffmpeg_location", OptionInfo(find_ffmpeg_binary(), "FFmpeg path/ location", section=section))

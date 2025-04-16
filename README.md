@@ -1,3 +1,6 @@
+# Reforum - reallybigname deforum (experimental branch)
+
+This repository is fork version to use in sd forge web ui classic
 
 # Reforum - reallybigname deforum (experimental branch)
 

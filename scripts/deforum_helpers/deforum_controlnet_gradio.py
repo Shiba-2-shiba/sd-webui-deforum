@@ -1,34 +1,44 @@
+# deforum_controlnet_gradio.py の修正案 (sd-webui-forge-classic 対応)
+# このスクリプトは、DeforumのControlNet UI要素の表示/非表示を制御する
+# Gradioヘルパー関数を提供します。
+# sd-webui-forge環境に合わせて不要な部分は削除されています。
+
 import gradio as gr
-# print (cnet_1.get_modules())
 
-    # *** TODO: re-enable table printing! disabled only temp! 13-04-23 ***
-    # table = Table(title="ControlNet params",padding=0, box=box.ROUNDED)
-
-    # TODO: auto infer the names and the values for the table
-    # field_names = []
-    # field_names += ["module", "model", "weight", "inv", "guide_start", "guide_end", "guess", "resize", "rgb_bgr", "proc res", "thr a", "thr b"]
-    # for field_name in field_names:
-        # table.add_column(field_name, justify="center")
-    
-    # cn_model_name = str(controlnet_args.cn_1_model)
-
-    # rows = []
-    # rows += [controlnet_args.cn_1_module, cn_model_name[len('control_'):] if 'control_' in cn_model_name else cn_model_name, controlnet_args.cn_1_weight, controlnet_args.cn_1_invert_image, controlnet_args.cn_1_guidance_start, controlnet_args.cn_1_guidance_end, controlnet_args.cn_1_guess_mode, controlnet_args.cn_1_resize_mode, controlnet_args.cn_1_rgbbgr_mode, controlnet_args.cn_1_processor_res, controlnet_args.cn_1_threshold_a, controlnet_args.cn_1_threshold_b]
-    # rows = [str(x) for x in rows]
-
-    # table.add_row(*rows)
-    # console.print(table)
+# --- UI 要素の表示/非表示を制御するヘルパー関数 ---
+# これらの関数は deforum_controlnet.py のUIイベントハンドラから呼ばれます。
 
 def hide_ui_by_cn_status(choice):
-    return gr.update(visible=True) if choice else gr.update(visible=False)
-    
-def hide_file_textboxes(choice):
-    return gr.update(visible=False) if choice else gr.update(visible=True)
-    
-class ToolButton(gr.Button, gr.components.FormComponent):
-        """Small button with single emoji as text, fits inside gradio forms"""
-        def __init__(self, **kwargs):
-            super().__init__(variant="tool", **kwargs)
+    """
+    ControlNetユニットの有効/無効チェックボックスの状態に基づいて、
+    関連するUI要素の表示/非表示を切り替えます。
 
-        def get_block_name(self):
-            return "button"
+    Args:
+        choice (bool): チェックボックスの状態 (True: 有効, False: 無効)
+
+    Returns:
+        gradio.update: 表示状態を更新するためのGradio updateオブジェクト
+    """
+    # チェックボックスがTrueなら表示(visible=True)、Falseなら非表示(visible=False)
+    return gr.update(visible=bool(choice))
+
+def hide_file_textboxes(choice):
+    """
+    ControlNetユニットのLoopback Modeチェックボックスの状態に基づいて、
+    ファイル入力（動画/画像パス）テキストボックスの表示/非表示を切り替えます。
+
+    Args:
+        choice (bool): Loopback Modeチェックボックスの状態 (True: ループバック有効, False: 無効)
+
+    Returns:
+        gradio.update: 表示状態を更新するためのGradio updateオブジェクト
+    """
+    # Loopback ModeがTrueの場合はファイル入力を非表示(visible=False)にするため、
+    # hide_ui_by_cn_statusとは逆のロジックになります。
+    return gr.update(visible=not bool(choice))
+
+# --- 不要になったコード ---
+# 元のA1111版Deforumに含まれていた可能性のある以下の要素は、
+# Forge版への対応で不要になったため削除されています。
+# - ToolButton クラス定義: lib_controlnet.controlnet_ui.tool_button からインポートするため不要。
+# - デバッグ用のテーブル表示コードなど。

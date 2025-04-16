@@ -13,6 +13,11 @@ from modules.shared import state, opts
 from .general_utils import checksum, clean_gradio_path_strings
 from .rich import console
 
+# Supported file extensions (ここに追加)
+SUPPORTED_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'bmp', 'webp', 'tiff']
+SUPPORTED_VIDEO_EXTENSIONS = ['mov', 'mpeg', 'mp4', 'm4v', 'avi', 'mpg', 'webm', 'mkv']
+
+
 try:
     from modules.modelloader import load_file_from_url
 except:
@@ -437,6 +442,18 @@ def delete_matching_frames(from_folder, img_batch_id):
     
 def count_matching_frames(from_folder, img_batch_id):
     return sum(1 for f in os.listdir(from_folder) if get_matching_frame(f, img_batch_id))
+# ↓↓↓ ここに追加 ↓↓↓
+def get_extension_if_valid(file_path, valid_extensions):
+    """Checks if the file extension is in the list of valid extensions."""
+    if not file_path or not isinstance(file_path, str):
+        return None
+    # ファイルパスから拡張子を取得し、小文字化して先頭の '.' を除去
+    extension = os.path.splitext(file_path)[1].lower().lstrip('.')
+    # 有効な拡張子のリスト（小文字）に含まれているか確認
+    if extension in [ext.lower() for ext in valid_extensions]:
+        return extension
+    return None
+# ↑↑↑ ここに追加 ↑↑↑
 
 def get_matching_frame(f, img_batch_id=None):
     return ('png' in f or 'jpg' in f) and '-' not in f and '_depth_' not in f and ((img_batch_id is not None and f.startswith(img_batch_id) or img_batch_id is None))

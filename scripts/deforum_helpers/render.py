@@ -56,6 +56,7 @@ from .updown_scale import updown_scale_to_integer
 from modules.shared import opts, cmd_opts, state, sd_model
 from modules import devices, sd_hijack
 lowvram = False
+lowvram = False
 from .RAFT import RAFT
 
 # IN PROGRESS

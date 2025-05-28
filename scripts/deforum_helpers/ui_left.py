@@ -6,10 +6,16 @@ from .gradio_funcs import change_css, handle_change_functions
 from .args import DeforumArgs, DeforumAnimArgs, ParseqArgs, DeforumOutputArgs, RootArgs, LoopArgs
 from .deforum_controlnet import setup_controlnet_ui
 from .ui_elements import get_tab_run, get_tab_keyframes, get_tab_prompts, get_tab_init, get_tab_hybrid, get_tab_output
+from modules import sd_schedulers 
 
 def set_arg_lists():
     # convert dicts to NameSpaces for easy working (args.param instead of args['param']
-    d = SimpleNamespace(**DeforumArgs())  # default args
+    args_dict = DeforumArgs()
+    args_dict["scheduler"]["choices"] = ["Automatic"] + [
+        s.label for s in sd_schedulers.schedulers
+        if s.label != "Automatic"
+    ]
+    d = SimpleNamespace(**args_dict)
     da = SimpleNamespace(**DeforumAnimArgs())  # default anim args
     dp = SimpleNamespace(**ParseqArgs())  # default parseq ars
     dv = SimpleNamespace(**DeforumOutputArgs())  # default video args
@@ -18,6 +24,7 @@ def set_arg_lists():
     return d, da, dp, dv, dr, dloopArgs
 
 def setup_deforum_left_side_ui():
+    
     d, da, dp, dv, dr, dloopArgs = set_arg_lists()
     # set up main info accordion on top of the UI
     with gr.Accordion("🎯 Info, Links and Help", open=False, elem_id='main_top_info_accord'):

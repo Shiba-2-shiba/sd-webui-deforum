@@ -3,6 +3,7 @@ from modules.shared import opts, sd_model
 import os
 
 def get_webui_sd_pipeline(args, root):
+    print(f"[Deforum Debug] args.scheduler in get_webui_sd_pipeline: {args.scheduler}") # デバッグ用
     # Set up the pipeline
     p = StableDiffusionProcessingImg2Img(
         sd_model=sd_model,
@@ -13,7 +14,10 @@ def get_webui_sd_pipeline(args, root):
     p.width, p.height = map(lambda x: x - x % 8, (args.W, args.H))
     p.steps = args.steps
     p.seed = args.seed
+    print(f"[Deforum Debug] Value of args.sampler: '{args.sampler}', type: {type(args.sampler)}")
+    print(f"[Deforum Debug] Value of args.scheduler: '{args.scheduler}', type: {type(args.scheduler)}") 
     p.sampler_name = args.sampler
+    p.scheduler = args.scheduler 
     p.tiling = args.tiling
     p.restore_faces = args.restore_faces
     p.subseed = root.subseed

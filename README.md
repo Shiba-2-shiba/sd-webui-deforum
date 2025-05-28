@@ -2,6 +2,17 @@
 
 This repository is fork version to use in sd forge web ui classic
 
+you can configure **Sampler** and **Scheduler** separately via their own dropdown menus.
+
+## Settings before useage
+
+In **sd forge web ui classic**, open **Settings** → **UI Alternatives** and check:
+
+- **Display the Scheduler Dropdown (requires Reload UI)**
+
+Then click **Reload UI**.  
+
+
 # Reforum - reallybigname deforum (experimental branch)
 
 ## Install ***Reforum*** branch in AUTOMATIC1111 

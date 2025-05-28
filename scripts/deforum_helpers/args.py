@@ -13,6 +13,7 @@ from .defaults import get_guided_imgs_default_json
 from .deforum_controlnet import controlnet_component_names
 from .general_utils import get_os, substitute_placeholders
 from .composite import make_composite
+from modules import sd_schedulers
 
 def RootArgs():
     return {
@@ -1154,6 +1155,14 @@ def DeforumArgs():
             "choices": [x.name for x in samplers_for_img2img],
             "value": samplers_for_img2img[0].name,
         },
+        "scheduler": {
+                          "label": "Scheduler",
+                          "type": "dropdown",
+                          "choices": lambda: ["Automatic"] + [
+                s.label for s in sd_schedulers.schedulers
+                if s.label != "Automatic"], # Step 1.2で動的に設定
+                          "value": "Automatic", # または適切なデフォルト値
+        },
         "steps": {
             "label": "Step",
             "type": "slider",
@@ -1477,6 +1486,22 @@ def DeforumOutputArgs():
     }
 
 def get_component_names():
+    return [
+         'override_settings_with_file',
+         'custom_settings_file',
+         *DeforumAnimArgs().keys(),
+         'animation_prompts',
+         'animation_prompts_positive',
+         'animation_prompts_negative',
+         *DeforumArgs().keys(),
+         # ─── 新規スケジューラー引数名をここに追加 ───
+         'scheduler',
+         *DeforumOutputArgs().keys(),
+         *ParseqArgs().keys(),
+         *LoopArgs().keys(),
+         *controlnet_component_names()
+    ]
+
     return ['override_settings_with_file', 'custom_settings_file', *DeforumAnimArgs().keys(), 'animation_prompts', 'animation_prompts_positive', 'animation_prompts_negative',
             *DeforumArgs().keys(), *DeforumOutputArgs().keys(), *ParseqArgs().keys(), *LoopArgs().keys(), *controlnet_component_names()]
 

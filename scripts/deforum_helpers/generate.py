@@ -210,6 +210,8 @@ def generate_inner(args, keys, anim_args, loop_args, controlnet_args, root, fram
             enable_hr=False,
             denoising_strength=0
         )
+        
+        p_txt.scheduler = args.scheduler
 
         print_combined_table(args, anim_args, p_txt, keys, frame)
 

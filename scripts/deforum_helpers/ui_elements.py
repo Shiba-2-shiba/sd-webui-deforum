@@ -26,6 +26,7 @@ def get_tab_run(d, da):
     with gr.TabItem('👉 Run') as run_tab:  # RUN TAB
         with FormRow():
             sampler = create_gr_elem(d.sampler)
+            scheduler = create_gr_elem(d.scheduler)
             steps = create_gr_elem(d.steps)
         with FormRow():
             W = create_gr_elem(d.W)

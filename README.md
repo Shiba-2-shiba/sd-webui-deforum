@@ -1,4 +1,4 @@
-# Reforum(fork version for forge)
+# Reforum(fork version for forge classic)
 
 This repository is fork version to use in sd forge web ui classic
 

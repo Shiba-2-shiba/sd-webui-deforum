@@ -55,8 +55,8 @@ from .updown_scale import updown_scale_to_integer
 
 from modules.shared import opts, cmd_opts, state, sd_model
 from modules import devices, sd_hijack
-lowvram = False
-lowvram = False
+# lowvram = False # この行は重複しているように見えるのでコメントアウトまたは削除を検討
+# lowvram = False # この行も同様
 from .RAFT import RAFT
 
 # IN PROGRESS
@@ -259,7 +259,10 @@ def render_animation(args, anim_args, video_args, parseq_args, loop_args, contro
     depth_model = None # Initialize
     if predict_depths or predict_depths_for_hybrid:
         keep_in_vram = opts.data.get("deforum_keep_3d_models_in_vram", False)
-        device = ('cpu' if cmd_opts.lowvram or cmd_opts.medvram else root.device)
+        # --- エラー箇所修正 ---
+        # device = ('cpu' if cmd_opts.lowvram or cmd_opts.medvram else root.device) # 修正前
+        device = ('cpu' if getattr(cmd_opts, 'lowvram', False) or getattr(cmd_opts, 'medvram', False) else root.device) # 修正後
+        # --------------------
         try:
             depth_model = DepthModel(root.models_path, device, root.half_precision, keep_in_vram=keep_in_vram, depth_algorithm=anim_args.depth_algorithm,
                                      # [source: 21]    # [source: 15]
@@ -456,13 +459,16 @@ def render_animation(args, anim_args, video_args, parseq_args, loop_args, contro
                 noise_mask_vals['video_mask'] = noise_mask_vals['everywhere']
         # ----------------------------------------
 
-        if mode == '3D' and (cmd_opts.lowvram or cmd_opts.medvram):
+        # --- エラー箇所周辺 ---
+        # if mode == '3D' and (cmd_opts.lowvram or cmd_opts.medvram): # 修正前
+        if mode == '3D' and (getattr(cmd_opts, 'lowvram', False) or getattr(cmd_opts, 'medvram', False)): # 修正後
+        # --------------------
             # [source: 28] # [source: 156]
-             lowvram.send_everything_to_cpu()
-             sd_hijack.model_hijack.undo_hijack(sd_model)
-             # [source: 46]
+             # lowvram.send_everything_to_cpu() # lowvram モジュール/オブジェクトが未定義の可能性
+             # sd_hijack.model_hijack.undo_hijack(sd_model)
              devices.torch_gc()
              if depth_model and hasattr(depth_model, 'to'): depth_model.to(root.device)
+
 
         # [source: 157]
         if anim_args.color_coherence != 'None' and anim_args.color_coherence_source in ['Video Init', 'Video Path'] and cc_alpha > 0 and cc_vid_folder is not None:
@@ -687,12 +693,16 @@ def render_animation(args, anim_args, video_args, parseq_args, loop_args, contro
         if scheduled_ancestral_eta is not None:
             opts.data["eta_ancestral"] = scheduled_ancestral_eta
 
-        if mode == '3D' and (cmd_opts.lowvram or cmd_opts.medvram):
+        # --- エラー箇所周辺 ---
+        # if mode == '3D' and (cmd_opts.lowvram or cmd_opts.medvram): # 修正前
+        if mode == '3D' and (getattr(cmd_opts, 'lowvram', False) or getattr(cmd_opts, 'medvram', False)): # 修正後
+        # --------------------
             # [source: 78]
             if depth_model and hasattr(depth_model, 'to'): depth_model.to('cpu')
             devices.torch_gc()
-            lowvram.setup_for_low_vram(sd_model, cmd_opts.medvram)
-            sd_hijack.model_hijack.hijack(sd_model) # [source: 183]
+            # lowvram.setup_for_low_vram(sd_model, cmd_opts.medvram) # lowvram モジュール/オブジェクトが未定義の可能性
+            # sd_hijack.model_hijack.hijack(sd_model) # [source: 183]
+
 
         #_/‾𝓟𝓻𝓮𝓿_𝓲𝓶𝓰‾𝓢𝓮𝓬𝓽𝓲𝓸𝓷‾𝟐‾‾‾‾‾\__________
 
@@ -886,7 +896,7 @@ def render_animation(args, anim_args, video_args, parseq_args, loop_args, contro
                 'turbo_' + root.timestring, 0 if next_idx == 0 else int(next_idx/turbo_steps),
                 outdir_turbo, turbo_next_image,
                 anim_args.save_depth_maps, depth_model, depth, anim_args.midas_weight,
-                cmd_opts, lowvram, sd_hijack, sd_model, devices, root
+                cmd_opts, None, sd_hijack, sd_model, devices, root # lowvram を None に変更 (未定義の可能性があるため)
                 # [source: 103]
             )
 
@@ -896,7 +906,7 @@ def render_animation(args, anim_args, video_args, parseq_args, loop_args, contro
                  root.timestring, next_idx, args.outdir, turbo_next_image,
                  anim_args.save_depth_maps, depth_model, depth, anim_args.midas_weight,
                  # [source: 104]
-                 cmd_opts, lowvram, sd_hijack, sd_model, devices, root
+                 cmd_opts, None, sd_hijack, sd_model, devices, root # lowvram を None に変更
              )
              img_history.add_state(turbo_next_image.astype(np.uint8), next_idx)
              hybrid_motion_history.add_state(prev_motion, next_idx)
@@ -1062,7 +1072,7 @@ def render_animation(args, anim_args, video_args, parseq_args, loop_args, contro
                     # [source: 129]
                     root.timestring, cadence_idx, args.outdir, img,
                     anim_args.save_depth_maps, depth_model, depth, anim_args.midas_weight,
-                    cmd_opts, lowvram, sd_hijack, sd_model, devices, root
+                    cmd_opts, None, sd_hijack, sd_model, devices, root # lowvram を None に変更
                 )
                 img_history.add_state(img.astype(np.uint8), cadence_idx)
                 # [source: 130]
